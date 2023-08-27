@@ -1,4 +1,5 @@
 # Import libraries
+from random import randint
 import pandas
 import numpy as np
 
@@ -78,10 +79,29 @@ print("Unbiased MSE:", unbiased_MSE)
 graphic.graph(X, Y, unbiased_beta)
 
 # Biased Regression
-X = regression.add_bias(X)
+biased_X = regression.add_bias(X)
 
-biased_beta = regression.calculate_beta(X, Y)
-biased_MSE = regression.MSE(X, Y, biased_beta)
+biased_beta = regression.calculate_beta(biased_X, Y)
+biased_MSE = regression.MSE(biased_X, Y, biased_beta)
 print("Biased Beta:", biased_beta)
 print("Biased MSE:", biased_MSE)
-graphic.graph(X, Y, biased_beta)
+graphic.graph(biased_X, Y, biased_beta)
+
+# Bootstreap
+unbiased_beta   = np.zeros(2)
+biased_beta     = np.zeros(3)
+rows, columns   = X.shape
+
+for i in range(100):
+    random_pos = randint(0, rows-1)
+    bst_X = np.delete(X, random_pos, 0)
+    bst_Y = np.delete(Y, random_pos, 0)
+
+    unbiased_beta += regression.calculate_beta(bst_X, bst_Y)
+
+    bst_X = regression.add_bias(bst_X)
+    biased_beta += regression.calculate_beta(bst_X, bst_Y)
+
+print("Boostrapping result")
+print("Unbiased Beta:", unbiased_beta / 100)
+print("Biased Beta:", biased_beta / 100)
